@@ -1,0 +1,16 @@
+Package: mmrmod
+Title: MMRM Analysis Without Assuming Orthogonality Property
+Version: 0.0.0.9000
+Authors@R: 
+    person("Kazushi", "Maruo", , "kazushi.maruo@gmail.com", 
+           role = c("aut", "cre"),
+           comment = c(ORCID = "0000-0002-3093-0386"))
+Description: The function \code{mmrmod} provides inference results for 
+             the mixed models for repeated measures (MMRM) analysis without 
+             assuming orthogonality property between fixed effect and 
+             variance-covariance parameters.
+License: MIT + file LICENSE
+Imports: MASS, Matrix, mmrm
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.2.3
