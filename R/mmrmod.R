@@ -79,7 +79,7 @@
 #'         bias of standard errors when orthogonality of mean and variance
 #'         parameters is not satisfied in the mixed model for repeated measures
 #'         analysis. Statistics in Medicine, 39, 1264-1274,
-#'         \url{https://doi.org/10.1002/sim.8474}.\cr
+#'         \doi{10.1002/sim.8474}.\cr
 #'   \item Maruo K, Ishii R, Yamaguchi Y, Gosho M (submitting). Small sample
 #'         adjustment for inference without assuming orthogonality in MMRM
 #'         analysis.
@@ -92,11 +92,14 @@
 #'
 #' @examples
 #' library(mmrm)
+#' # fev_data from mmrm package
 #' data(fev_data)
 #'
-#' mmrmod(data = fev_data, outcome = FEV1, group = ARMCD, time = AVISIT,
-#'        subject = USUBJID, covariate = c("RACE", "SEX", "FEV1_BL"),
-#'        covfactor = c(1, 1, 0))
+#' res <- mmrmod(data = fev_data, outcome = FEV1, group = ARMCD, time = AVISIT,
+#'               subject = USUBJID, covariate = c("RACE", "SEX", "FEV1_BL"),
+#'               covfactor = c(1, 1, 0))
+#' res$marg.mean
+#' res$diff.mean
 #'
 #' @importFrom stats as.formula model.matrix pnorm pt qnorm qt ftable coef xtabs
 #' @importFrom MASS ginv
@@ -192,8 +195,7 @@ mmrmod <- function(data, outcome, group, time, subject, covariate = NULL,
     }
   }
   formula <- as.formula(form0)
-  fit <- mmrm(formula = formula, data = data, reml = reml,
-              control = mmrm_control(...), ...)
+  fit <- mmrm(formula = formula, data = data, reml = reml, ...)
   if (reml) {
     res <- fit
     warning("If reml = TRUE is specified, standard error without assuming
@@ -531,13 +533,15 @@ mmrmod <- function(data, outcome, group, time, subject, covariate = NULL,
           bgti <- (tp0 - 2) * (ng - 1) + i - 1
           dbgt[bgti] <- 1
         }
-        if (intcov) {
-          covmeanint <- numeric((nt - 1) * length(covmean))
-          if (tp0 != 1) {
-            covmeanint[seq(tp0 - 1, length(covmeanint), by = (nt - 1))] <- covmean
+        covmeanint <- NULL
+        if (!is.null(covariate)){
+          if (intcov) {
+            covmeanint <- numeric((nt - 1) * length(covmean))
+            if (tp0 != 1) {
+              covmeanint[seq(tp0 - 1, length(covmeanint),
+                             by = (nt - 1))] <- covmean
+            }
           }
-        } else {
-          covmeanint <- NULL
         }
         ell[, i] <- c(1, dbg, dbt, covmean, dbgt, covmeanint)
         Dt <- c(ell[, i], numeric(ns))
@@ -572,6 +576,15 @@ mmrmod <- function(data, outcome, group, time, subject, covariate = NULL,
       if (type == "UN"){
         rad1 <- Ncc / (Ncc - nt)
         dad <- Ncc - nt
+        if(dad <= 1) {
+          stop("Number of complete cases is too small to conduct small
+                sample adjustment. Use different ssadjust option.")
+        }
+        if (rad1 > 1.5 ^ 2) {
+          warning("Small sample adjustments have increased the SE by more than
+                  1.5 times. May be overly conservative. Might should consider
+                  using a different ssadjust option.")
+        }
       }
       if (type != "UN"){
         rad1 <- n.data / (n.data - length(beta))
