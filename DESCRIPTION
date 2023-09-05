@@ -1,6 +1,6 @@
 Package: mmrmod
 Title: MMRM Analysis Without Assuming Orthogonality Property
-Version: 0.0.0.9000
+Version: 0.1.0
 Authors@R: 
     person("Kazushi", "Maruo", , "kazushi.maruo@gmail.com", 
            role = c("aut", "cre"),

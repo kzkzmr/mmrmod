@@ -115,11 +115,14 @@ for parameter estimation.
 }
 \examples{
 library(mmrm)
+# fev_data from mmrm package
 data(fev_data)
 
-mmrmod(data = fev_data, outcome = FEV1, group = ARMCD, time = AVISIT,
-       subject = USUBJID, covariate = c("RACE", "SEX", "FEV1_BL"),
-       covfactor = c(1, 1, 0))
+res <- mmrmod(data = fev_data, outcome = FEV1, group = ARMCD, time = AVISIT,
+              subject = USUBJID, covariate = c("RACE", "SEX", "FEV1_BL"),
+              covfactor = c(1, 1, 0))
+res$marg.mean
+res$diff.mean
 
 }
 \references{
