@@ -131,7 +131,7 @@ res$diff.mean
 bias of standard errors when orthogonality of mean and variance
 parameters is not satisfied in the mixed model for repeated measures
 analysis. Statistics in Medicine, 39, 1264-1274,
-\url{https://doi.org/10.1002/sim.8474}.\cr
+\doi{10.1002/sim.8474}.\cr
 \item Maruo K, Ishii R, Yamaguchi Y, Gosho M (submitting). Small sample
 adjustment for inference without assuming orthogonality in MMRM
 analysis.
