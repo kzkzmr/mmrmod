@@ -38,6 +38,9 @@
 #'   the \code{mmrm} package is returned. Default is \code{FALSE}.
 #' @param intcov a logical value specifying whether to include interactions
 #'   between \code{time} and \code{covariate}. Default is \code{TRUE}.
+#' @param od a logical variable indicating whether or not the off-diagonal
+#'   components are considered; if \code{od=TRUE}, the off-diagonal components
+#'   are considered, i.e., orthogonality is not assumed. Default is \code{TRUE}.
 #' @param conf.level a numeric value of the confidence level for the
 #'   confidence intervals. Default is 0.95.
 #' @param ... additional arguments to be passed to the \code{mmrm} function.
@@ -111,9 +114,9 @@
 
 mmrmod <- function(data, outcome, group, time, subject, covariate = NULL,
                    covfactor = NULL, type = "UN", hetero = TRUE, robust = TRUE,
-                   ssadjust = 1, reml = FALSE, intcov = TRUE, conf.level = 0.95,
+                   ssadjust = 1, reml = FALSE, intcov = TRUE, od = TRUE,
+                   conf.level = 0.95,
                    ...){
-  od <- TRUE
 
   data00 <- as.data.frame(data)
   data <- data.frame(y = data00[, deparse(substitute(outcome))],
@@ -147,7 +150,7 @@ mmrmod <- function(data, outcome, group, time, subject, covariate = NULL,
   }
   data$time <- as.factor(data$time)
   data$group <- as.factor(data$group)
-  data0 <<- data
+  data0 <- data
   form0 <- "y ~ group * time"
   if (!is.null(covariate)) {
     if (intcov) {
@@ -285,7 +288,7 @@ mmrmod <- function(data, outcome, group, time, subject, covariate = NULL,
     options(na.action = "na.omit")
     if (!is.null(covariate)){
       options(na.action = "na.pass")
-      Xcov <- as.matrix(model.matrix(formc, data = data01))[, -1]
+      Xcov <- as.matrix(model.matrix(formc, data = data01)[, -1])
       options(na.action = "na.omit")
       covmean <- colMeans(Xcov)
     } else {
@@ -323,8 +326,8 @@ mmrmod <- function(data, outcome, group, time, subject, covariate = NULL,
 
     for (j in 1:(t2)){
       mv <- Dec2Bin(j-1, nt)
-      aprt <- as.matrix(apply(rt==0, 1, '==', mv))
-      if (t2==1) {
+      aprt <- as.matrix(apply(rt == 0, 1, '==', mv))
+      if (t2 == 1) {
         aprt <- t(aprt)
       }
       dp[colSums(aprt) == nt] <- j
@@ -333,7 +336,11 @@ mmrmod <- function(data, outcome, group, time, subject, covariate = NULL,
     ndp <- matrix(0, ngs, t2)
     for (i in 1:ngs){
       for (j in 1:t2) {
-        ndp[i,j] <- sum(dp == j & grp0 == i)
+        if (hetero){
+          ndp[i,j] <- sum(dp == j & grp0 == i)
+        } else {
+          ndp[i,j] <- sum(dp == j)
+        }
       }
     }
     Hb <- matrix(0, nb, nb)
@@ -505,10 +512,24 @@ mmrmod <- function(data, outcome, group, time, subject, covariate = NULL,
     iII <- ginv(-H)
     iIIr0 <- iII0 %*% Jb %*% iII0
     iIIr <- iII %*% J %*% iII
-    if (robust) {
-      Vtheta <- iIIr
+    iIIs0 <- ginv(as.matrix(-Hs))
+    iIIsr0 <- iIIs0 %*% Js %*% iIIs0
+
+    if (od){
+      if (robust) {
+        Vtheta <- iIIr
+      } else {
+        Vtheta <- iII
+      }
     } else {
-      Vtheta <- iII
+      Vtheta <- list()
+      if (robust) {
+        Vtheta$beta <- iIIr0
+        Vtheta$alpha <- iIIsr0
+      } else {
+        Vtheta$beta <- iII0
+        Vtheta$alpha <- iIIs0
+      }
     }
     res <- c()
     resd <- c()

@@ -18,6 +18,7 @@ mmrmod(
   ssadjust = 1,
   reml = FALSE,
   intcov = TRUE,
+  od = TRUE,
   conf.level = 0.95,
   ...
 )
@@ -69,6 +70,10 @@ the \code{mmrm} package is returned. Default is \code{FALSE}.}
 
 \item{intcov}{a logical value specifying whether to include interactions
 between \code{time} and \code{covariate}. Default is \code{TRUE}.}
+
+\item{od}{a logical variable indicating whether or not the off-diagonal
+components are considered; if \code{od=TRUE}, the off-diagonal components
+are considered, i.e., orthogonality is not assumed. Default is \code{TRUE}.}
 
 \item{conf.level}{a numeric value of the confidence level for the
 confidence intervals. Default is 0.95.}

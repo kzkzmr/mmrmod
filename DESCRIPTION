@@ -1,6 +1,6 @@
 Package: mmrmod
 Title: MMRM Analysis Without Assuming Orthogonality Property
-Version: 0.1.0
+Version: 0.1.1
 Authors@R: 
     person("Kazushi", "Maruo", , "kazushi.maruo@gmail.com", 
            role = c("aut", "cre"),
@@ -13,4 +13,4 @@ License: MIT + file LICENSE
 Imports: MASS, Matrix, mmrm
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.2.3
+RoxygenNote: 7.3.1
